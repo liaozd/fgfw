@@ -51,17 +51,22 @@ def make_access_token():
     login_url = 'https://api.weibo.com/oauth2/authorize'
 
     url = client.get_authorize_url()
+    print url
     content = urllib2.urlopen(url)
+    print content
     if content:
         headers = { 'Referer' : url }
         request = urllib2.Request(login_url, params, headers)
+        print request
         opener = get_opener(False)
         urllib2.install_opener(opener)
         try:
             f = opener.open(request)
             print f.headers.headers
             return_callback_url = f.geturl()
+
             # print f.read()
+            print return_callback_url
         except urllib2.HTTPError, e:
             return_callback_url = e.geturl()
         # 取到返回的code
