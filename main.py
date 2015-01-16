@@ -57,7 +57,6 @@ def make_access_token():
     if content:
         headers = { 'Referer' : url }
         request = urllib2.Request(login_url, params, headers)
-        print request
         opener = get_opener(False)
         urllib2.install_opener(opener)
         try:
