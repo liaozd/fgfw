@@ -78,15 +78,26 @@ def apply_access_token():
 
 
 def expand_short_url(short_url):
-    response = urllib2.urlopen(short_url)
-    return response.url
+    responsejson = client.get.short_url__expand(url_short='http://t.cn/RZNTSzw')
+    return responsejson['urls'][0]['url_long']
+    # not use api way
+    # response = urllib2.urlopen(short_url)
+    # return response.url
+
+
+def get_resent_mentions(count=10):
+    # return mentions in json format
+    # weibo api doc
+    # http://open.weibo.com/wiki/2/statuses/mentions
+    mentions = client.get.statuses__mentions(count=count)
+    return mentions
 
 if __name__ == "__main__":
     apply_access_token()
-    expand_short_url('http://t.cn/RZNTSzw')
-    status = client.get.account__rate_limit_status()
-    mentions = client.get.statuses__mentions(count=2)
-    print mentions
-
+    long_url = expand_short_url('http://t.cn/RZNTSzw')
+    print long_url
+    mentions = get_resent_mentions()
+    for i in mentions['statuses']:
+        print i['user']['id'], i['text']
 
 
