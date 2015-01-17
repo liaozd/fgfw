@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sqlite3
+import webbrowser
+import sys
+import os
 import re
+import time
 
 __version__ = '1.0'
 __author__ = 'http://weibo.com/liaozd'
 
 # api from:http://michaelliao.github.com/sinaweibopy/
 from weibo import APIClient
-import webbrowser
-import sys, os
+
 from retry import *
 from keyfile import *
 try:
@@ -24,7 +27,7 @@ if sys.getdefaultencoding() != default_encoding:
     sys.setdefaultencoding(default_encoding)
 
 # token file path
-save_access_token_file  = 'access_token.txt'
+save_access_token_file = 'access_token.txt'
 file_path = os.getcwd() + os.path.sep
 access_token_file_path = file_path + save_access_token_file
 
@@ -84,17 +87,21 @@ def expand_short_url(short_url):
     # response = urllib2.urlopen(short_url)
     # return response.url
 
+
 def get_resent_mentions(count=10):
     # return mentions in json format
     # weibo api doc
     # http://open.weibo.com/wiki/2/statuses/mentions
     mentions = client.get.statuses__mentions(count=count)
+    print mentions
     return mentions
+
 
 def filter_url(text):
     # from weibo text msg filter out the short url
     url = re.findall(r'http://t.cn/[\w+]{7,}', text)
     return url
+
 
 def dump_mentions_to_database(mentions):
     database_file = 'my.db'
@@ -108,9 +115,9 @@ def dump_mentions_to_database(mentions):
            USERID INT NOT NULL,
            CREATED_AT datetime,
            MID INT NOT NULL,
-           YOUTUBE_URL CHAR(60) PRIMARY KEY,
+           YOUTUBE_URL CHAR(120) PRIMARY KEY,
            DOWNLOADED BOOLEAN,
-           YOUKU_UL CHAR(100),
+           YOUKU_UL CHAR(120),
            UPLOADED BOOLEAN
            );''')
     statuses = mentions['statuses']
@@ -123,9 +130,10 @@ def dump_mentions_to_database(mentions):
         short_url = filter_url(oneMsg['text'])
         if not short_url:
             continue
-        youtube_url = expand_short_url(short_url)
+        youtube_url = expand_short_url(short_url[-1])
+        print youtube_url
         try:
-            conn.execute('INSERT INTO LINKS (USERID, MID, YOUTUBE_URL) VALUES ({0}, {1}, "{2}")'.format(user_id, mid, short_url))
+            conn.execute('INSERT INTO LINKS (USERID, MID, YOUTUBE_URL) VALUES ({0}, {1}, "{2}")'.format(user_id, mid, youtube_url))
             print youtube_url
         except sqlite3.IntegrityError:
             print 'Youtube link already exists: {}'.format(youtube_url)
@@ -138,10 +146,14 @@ def dump_mentions_to_database(mentions):
 
 if __name__ == "__main__":
     apply_access_token()
-    mentions = get_resent_mentions(count=5)
+    # i = 1
+    # while i < 10:
+    #     print time.strftime("%Y-%m-%d %A %X %Z", time.localtime())
+    mentions = get_resent_mentions(count=10)
     # for i in mentions['statuses']:
     #     print i['user']['id'], i['text']
     dump_mentions_to_database(mentions=mentions)
-
+        # i += 1
+        # time.sleep(600)
 
 

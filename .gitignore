@@ -64,3 +64,6 @@ keyfile.py
 
 # weibo token file
 access_token.txt
+
+# database file
+*.db
