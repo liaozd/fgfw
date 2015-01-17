@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import urllib2
-<<<<<<< HEAD
 import sqlite3
 import re
-=======
->>>>>>> f2383af9158c42c7e30d3782724d761cd88fa6e5
 
 __version__ = '1.0'
 __author__ = 'http://weibo.com/liaozd'
@@ -78,7 +74,6 @@ def apply_access_token():
                 pass
     except:
         make_access_token()
-
     return False
 
 
@@ -89,7 +84,6 @@ def expand_short_url(short_url):
     # response = urllib2.urlopen(short_url)
     # return response.url
 
-
 def get_resent_mentions(count=10):
     # return mentions in json format
     # weibo api doc
@@ -97,13 +91,10 @@ def get_resent_mentions(count=10):
     mentions = client.get.statuses__mentions(count=count)
     return mentions
 
-<<<<<<< HEAD
-
 def filter_url(text):
-
-    url = re.findall(r'http://t.cn/[\w+]{7,}',text)
-    # return the last one in weibo msg
-    return url[-1]
+    # from weibo text msg filter out the short url
+    url = re.findall(r'http://t.cn/[\w+]{7,}', text)
+    return url
 
 def dump_mentions_to_database(mentions):
     database_file = 'my.db'
@@ -118,17 +109,26 @@ def dump_mentions_to_database(mentions):
            CREATED_AT datetime,
            MID INT NOT NULL,
            YOUTUBE_URL CHAR(60) PRIMARY KEY,
-           YOUKU_UL CHAR(100)
+           DOWNLOADED BOOLEAN,
+           YOUKU_UL CHAR(100),
+           UPLOADED BOOLEAN
            );''')
     statuses = mentions['statuses']
 
-    for tweety in statuses:
-        print tweety['user']['id'], tweety['mid'], tweety['created_at']
-        filter_url(tweety['text'])
+    for oneMsg in statuses:
+        print oneMsg['user']['id'], oneMsg['mid'], oneMsg['created_at']
+        user_id = oneMsg['user']['id']
+        mid = oneMsg['mid']
+        craeted_at = oneMsg['created_at']
+        short_url = filter_url(oneMsg['text'])
+        if not short_url:
+            continue
+        youtube_url = expand_short_url(short_url)
         try:
-            conn.execute("INSERT INTO LINKS (USERID, MID, YOUTUBE_URL) VALUES ({0}, {1}, {2})".format(tweety['user']['id'], tweety['mid'], tweety['text']))
+            conn.execute('INSERT INTO LINKS (USERID, MID, YOUTUBE_URL) VALUES ({0}, {1}, "{2}")'.format(user_id, mid, short_url))
+            print youtube_url
         except sqlite3.IntegrityError:
-            print 'ERROR: youtube link already exists: {}'.format(tweety['text'])
+            print 'Youtube link already exists: {}'.format(youtube_url)
         # INSERT INTO LINKS (USERID, MID, YOUTUBE_URL) VALUES (5144344398, 3800000892661694, ' @liaozhuodi youtube link: http://t.cn/RZNTSzw testEnd')
     conn.commit()
     conn.close()
@@ -142,14 +142,6 @@ if __name__ == "__main__":
     # for i in mentions['statuses']:
     #     print i['user']['id'], i['text']
     dump_mentions_to_database(mentions=mentions)
-=======
-if __name__ == "__main__":
-    apply_access_token()
-    long_url = expand_short_url('http://t.cn/RZNTSzw')
-    print long_url
-    mentions = get_resent_mentions()
-    for i in mentions['statuses']:
-        print i['user']['id'], i['text']
->>>>>>> f2383af9158c42c7e30d3782724d761cd88fa6e5
+
 
 
