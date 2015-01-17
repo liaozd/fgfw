@@ -94,6 +94,10 @@ def get_resent_mentions(count=10):
     return mentions
 
 
+def filter_url(text):
+    re = (http://t.cn/[\w+]{7,})
+    pass
+
 def dump_mentions_to_database(mentions):
     database_file = 'my.db'
     file_path = os.getcwd() + os.path.sep
@@ -102,11 +106,23 @@ def dump_mentions_to_database(mentions):
     conn = sqlite3.connect(database_file_path)
     print "Opened database successfully"
     conn.execute('''CREATE TABLE IF NOT EXISTS LINKS
-           (ID         INT PRIMARY KEY     NOT NULL,
-           USERID      INT                 NOT NULL,
-           CREATED_AT  datetime,
-           YOU2B_URL   CHAR(60)
+           (
+           USERID INT NOT NULL,
+           CREATED_AT datetime,
+           MID INT NOT NULL,
+           YOUTUBE_URL CHAR(60) PRIMARY KEY,
+           YOUKU_UL CHAR(100)
            );''')
+    statuses = mentions['statuses']
+    for tweety in statuses:
+        print tweety['user']['id'], tweety['mid'], tweety['created_at']
+        print tweety['text']
+        try:
+            conn.execute("INSERT INTO LINKS (USERID, MID, YOUTUBE_URL) VALUES ({0}, {1}, {2})".format(tweety['user']['id'], tweety['mid'], tweety['text']))
+        except sqlite3.IntegrityError:
+            print 'ERROR: youtube link already exists: {}'.format(tweety['text'])
+        # INSERT INTO LINKS (USERID, MID, YOUTUBE_URL) VALUES (5144344398, 3800000892661694, ' @liaozhuodi youtube link: http://t.cn/RZNTSzw testEnd')
+    conn.commit()
     conn.close()
 
 # https://github.com/Davidigest/pyYouku
@@ -115,8 +131,8 @@ def dump_mentions_to_database(mentions):
 if __name__ == "__main__":
     apply_access_token()
     mentions = get_resent_mentions(count=5)
-    for i in mentions['statuses']:
-        print i['user']['id'], i['text']
+    # for i in mentions['statuses']:
+    #     print i['user']['id'], i['text']
     dump_mentions_to_database(mentions=mentions)
 
 
