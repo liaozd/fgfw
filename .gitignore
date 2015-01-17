@@ -61,3 +61,7 @@ target/
 
 # my keyfile
 keyfile.py
+
+# weibo token file
+
+access_token.txt
