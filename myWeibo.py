@@ -24,12 +24,12 @@ def get_access_token():
 
 
 def get_data():
-    access_token = ''
-    expires_in = ''
+    access_token = '4af529b0cbe69d07a4dfddc29462d186'
+    expires_in = '1579103224'
     api = weibo.APIClient(APP_KEY, APP_SECRET, redirect_uri=REDIRECT_URL)
     api.set_access_token(access_token, expires_in)
-    r = api.statuses.home_timeline.get(uid=YOUR_USERID, count=100)
-    return r.statuses
+    r = api.status.home_timeline.get(uid=YOUR_USERID, count=100)
+    return r.status
 
 
 def save_data():
@@ -46,4 +46,5 @@ def save_data():
 
 
 if __name__ == '__main__':
-    get_access_token()
+    # get_access_token()
+    get_data()

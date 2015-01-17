@@ -1,5 +1,5 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#/usr/bin/env python
 
 __version__ = '1.0'
 __author__ = 'http://weibo.com/wtmmac'
@@ -12,7 +12,7 @@ Demo for sinaweibopy
 
 # api from:http://michaelliao.github.com/sinaweibopy/
 from weibo import APIClient
-
+import webbrowser
 import sys, os, urllib, urllib2
 from http_helper import *
 from retry import *
@@ -30,54 +30,32 @@ if sys.getdefaultencoding() != default_encoding:
 
 # token file path
 save_access_token_file  = 'access_token.txt'
-file_path = os.path.dirname(__file__) + os.path.sep
+file_path = os.getcwd() + os.path.sep
 access_token_file_path = file_path + save_access_token_file
 
 client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
 
 def make_access_token():
-    '''请求access token'''
-    params = urllib.urlencode({'action':'submit','withOfficalFlag':'0','ticket':'','isLoginSina':'', \
-        'response_type':'code', \
-        'regCallback':'', \
-        'redirect_uri':CALLBACK_URL, \
-        'client_id':APP_KEY, \
-        'state':'', \
-        'from':'', \
-        'userId':USERID, \
-        'passwd':USERPASSWD, \
-        })
+    # api = weibo.APIClient(APP_KEY, APP_SECRET)
 
-    login_url = 'https://api.weibo.com/oauth2/authorize'
+    authorize_url = client.get_authorize_url(REDIRECT_URL)
+    print(authorize_url)
+    webbrowser.open_new(authorize_url)
+    code = raw_input('authencation code: ')
 
-    url = client.get_authorize_url()
-    print url
-    content = urllib2.urlopen(url)
-    print content
-    if content:
-        headers = { 'Referer' : url }
-        request = urllib2.Request(login_url, params, headers)
-        opener = get_opener(False)
-        urllib2.install_opener(opener)
-        try:
-            f = opener.open(request)
-            print f.headers.headers
-            return_callback_url = f.geturl()
-
-            # print f.read()
-            print return_callback_url
-        except urllib2.HTTPError, e:
-            return_callback_url = e.geturl()
-        # 取到返回的code
-        code = return_callback_url.split('=')[1]
+    request = client.request_access_token(code, REDIRECT_URL)
+    access_token = request.access_token
+    expires_in = request.expires_in
+    print 'access token: ', access_token
+    print 'expire: ', expires_in
     #得到token
-    token = client.request_access_token(code)
-    save_access_token(token)
+    print request['access_token']
+    save_access_token(request)
 
-def save_access_token(token):
+def save_access_token(request):
     '''将access token保存到本地'''
     f = open(access_token_file_path, 'w')
-    f.write(token['access_token']+' ' + str(token['expires_in']))
+    f.write(request['access_token']+' ' + str(request['expires_in']))
     f.close()
 
 @retry(1)
