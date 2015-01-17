@@ -1,20 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import urllib2
 
 __version__ = '1.0'
-__author__ = 'http://weibo.com/wtmmac'
-
-'''
-Demo for sinaweibopy
-主要实现token自动生成及更新
-适合于后端服务相关应用
-'''
+__author__ = 'http://weibo.com/liaozd'
 
 # api from:http://michaelliao.github.com/sinaweibopy/
 from weibo import APIClient
 import webbrowser
 import sys, os
-from http_helper import *
 from retry import *
 from keyfile import *
 try:
@@ -35,6 +29,7 @@ access_token_file_path = file_path + save_access_token_file
 
 client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
 
+
 def make_access_token():
     authorize_url = client.get_authorize_url(REDIRECT_URL)
     print(authorize_url)
@@ -49,6 +44,7 @@ def make_access_token():
     #得到token
     print request['access_token']
     save_access_token(request)
+
 
 def save_access_token(request):
     '''将access token保存到本地'''
@@ -80,9 +76,17 @@ def apply_access_token():
 
     return False
 
+
+def expand_short_url(short_url):
+    response = urllib2.urlopen(short_url)
+    return response.url
+
 if __name__ == "__main__":
     apply_access_token()
-    # 以下为访问微博api的应用逻辑
-    # 以接口访问状态为例
+    expand_short_url('http://t.cn/RZNTSzw')
     status = client.get.account__rate_limit_status()
-    print json.dumps(status)
+    mentions = client.get.statuses__mentions(count=2)
+    print mentions
+
+
+
