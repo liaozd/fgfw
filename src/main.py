@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import urllib2
+import sqlite3
 
 __version__ = '1.0'
 __author__ = 'http://weibo.com/liaozd'
@@ -92,12 +93,30 @@ def get_resent_mentions(count=10):
     mentions = client.get.statuses__mentions(count=count)
     return mentions
 
+
+def dump_mentions_to_database(mentions):
+    database_file = 'my.db'
+    file_path = os.getcwd() + os.path.sep
+    database_file_path = file_path + database_file
+    print database_file_path
+    conn = sqlite3.connect(database_file_path)
+    print "Opened database successfully"
+    conn.execute('''CREATE TABLE IF NOT EXISTS LINKS
+           (ID         INT PRIMARY KEY     NOT NULL,
+           USERID      INT                 NOT NULL,
+           CREATED_AT  datetime,
+           YOU2B_URL   CHAR(60)
+           );''')
+    conn.close()
+
+# https://github.com/Davidigest/pyYouku
+# batch upload video to youku
+
 if __name__ == "__main__":
     apply_access_token()
-    long_url = expand_short_url('http://t.cn/RZNTSzw')
-    print long_url
-    mentions = get_resent_mentions()
+    mentions = get_resent_mentions(count=5)
     for i in mentions['statuses']:
         print i['user']['id'], i['text']
+    dump_mentions_to_database(mentions=mentions)
 
 
