@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import urllib2
 import sqlite3
+import re
 
 __version__ = '1.0'
 __author__ = 'http://weibo.com/liaozd'
@@ -95,14 +96,16 @@ def get_resent_mentions(count=10):
 
 
 def filter_url(text):
-    re = (http://t.cn/[\w+]{7,})
-    pass
+
+    url = re.findall(r'http://t.cn/[\w+]{7,}',text)
+    # return the last one in weibo msg
+    return url[-1]
 
 def dump_mentions_to_database(mentions):
     database_file = 'my.db'
     file_path = os.getcwd() + os.path.sep
     database_file_path = file_path + database_file
-    print database_file_path
+
     conn = sqlite3.connect(database_file_path)
     print "Opened database successfully"
     conn.execute('''CREATE TABLE IF NOT EXISTS LINKS
@@ -114,9 +117,10 @@ def dump_mentions_to_database(mentions):
            YOUKU_UL CHAR(100)
            );''')
     statuses = mentions['statuses']
+
     for tweety in statuses:
         print tweety['user']['id'], tweety['mid'], tweety['created_at']
-        print tweety['text']
+        filter_url(tweety['text'])
         try:
             conn.execute("INSERT INTO LINKS (USERID, MID, YOUTUBE_URL) VALUES ({0}, {1}, {2})".format(tweety['user']['id'], tweety['mid'], tweety['text']))
         except sqlite3.IntegrityError:
