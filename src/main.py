@@ -82,7 +82,6 @@ def apply_access_token():
 
 if __name__ == "__main__":
     apply_access_token()
-
     # 以下为访问微博api的应用逻辑
     # 以接口访问状态为例
     status = client.get.account__rate_limit_status()
