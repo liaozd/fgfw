@@ -59,9 +59,8 @@ target/
 #Pycharm
 .idea/
 
-# my keyfile
+# keyfile
 keyfile.py
 
 # weibo token file
-
 access_token.txt
