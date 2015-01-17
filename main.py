@@ -69,7 +69,7 @@ def apply_access_token():
         try:
             client.set_access_token(access_token, expires_in)
         except StandardError, e:
-            if hasattr(e, 'error'): 
+            if hasattr(e, 'error'):
                 if e.error == 'expired_token':
                     # token过期重新生成
                     make_access_token()
@@ -77,7 +77,7 @@ def apply_access_token():
                 pass
     except:
         make_access_token()
-    
+
     return False
 
 if __name__ == "__main__":
