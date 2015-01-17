@@ -13,7 +13,7 @@ Demo for sinaweibopy
 # api from:http://michaelliao.github.com/sinaweibopy/
 from weibo import APIClient
 import webbrowser
-import sys, os, urllib, urllib2
+import sys, os
 from http_helper import *
 from retry import *
 from keyfile import *
@@ -36,8 +36,6 @@ access_token_file_path = file_path + save_access_token_file
 client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
 
 def make_access_token():
-    # api = weibo.APIClient(APP_KEY, APP_SECRET)
-
     authorize_url = client.get_authorize_url(REDIRECT_URL)
     print(authorize_url)
     webbrowser.open_new(authorize_url)
