@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import urllib2
+<<<<<<< HEAD
 import sqlite3
 import re
+=======
+>>>>>>> f2383af9158c42c7e30d3782724d761cd88fa6e5
 
 __version__ = '1.0'
 __author__ = 'http://weibo.com/liaozd'
@@ -94,6 +97,7 @@ def get_resent_mentions(count=10):
     mentions = client.get.statuses__mentions(count=count)
     return mentions
 
+<<<<<<< HEAD
 
 def filter_url(text):
 
@@ -138,5 +142,14 @@ if __name__ == "__main__":
     # for i in mentions['statuses']:
     #     print i['user']['id'], i['text']
     dump_mentions_to_database(mentions=mentions)
+=======
+if __name__ == "__main__":
+    apply_access_token()
+    long_url = expand_short_url('http://t.cn/RZNTSzw')
+    print long_url
+    mentions = get_resent_mentions()
+    for i in mentions['statuses']:
+        print i['user']['id'], i['text']
+>>>>>>> f2383af9158c42c7e30d3782724d761cd88fa6e5
 
 
