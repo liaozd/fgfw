@@ -93,7 +93,6 @@ def get_resent_mentions(count=10):
     # weibo api doc
     # http://open.weibo.com/wiki/2/statuses/mentions
     mentions = client.get.statuses__mentions(count=count)
-    print mentions
     return mentions
 
 
@@ -117,7 +116,7 @@ def dump_mentions_to_database(mentions):
            MID INT NOT NULL,
            YOUTUBE_URL CHAR(120) PRIMARY KEY,
            DOWNLOADED BOOLEAN,
-           YOUKU_UL CHAR(120),
+           YOUKU_URL CHAR(120),
            UPLOADED BOOLEAN
            );''')
     statuses = mentions['statuses']
@@ -137,12 +136,9 @@ def dump_mentions_to_database(mentions):
             print youtube_url
         except sqlite3.IntegrityError:
             print 'Youtube link already exists: {}'.format(youtube_url)
-        # INSERT INTO LINKS (USERID, MID, YOUTUBE_URL) VALUES (5144344398, 3800000892661694, ' @liaozhuodi youtube link: http://t.cn/RZNTSzw testEnd')
     conn.commit()
     conn.close()
 
-# https://github.com/Davidigest/pyYouku
-# batch upload video to youku
 
 if __name__ == "__main__":
     apply_access_token()

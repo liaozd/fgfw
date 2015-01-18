@@ -67,3 +67,6 @@ access_token.txt
 
 # database file
 *.db
+
+# pyYouku-master config file
+config.py
