@@ -62,11 +62,13 @@ target/
 # keyfile
 keyfile.py
 
-# weibo token file
+# token file
 access_token.txt
 
 # database file
 *.db
+# tmp file
+src/tmp
 
 # pyYouku-master config file
 config.py
