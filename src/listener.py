@@ -35,6 +35,24 @@ class WeiboListener(object):
 
         self.client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
 
+        #build database
+        database_file = 'my.db'
+        file_path = os.getcwd() + os.path.sep
+        self.database_file_path = file_path + database_file
+        conn = sqlite3.connect(self.database_file_path)
+        print "Opened database successfully"
+        conn.execute('''CREATE TABLE IF NOT EXISTS LINKS
+                    (
+                    USERID INT NOT NULL,
+                    CREATED_AT datetime,
+                    MID INT NOT NULL,
+                    YOUTUBE_URL CHAR(120) PRIMARY KEY,
+                    TITLE CHAR(200)
+                    DOWNLOADED BOOLEAN,
+                    YOUKU_URL CHAR(120),
+                    UPLOADED BOOLEAN,
+
+                    );''')
     def make_access_token(self):
         authorize_url = self.client.get_authorize_url(REDIRECT_URL)
         print(authorize_url)
@@ -84,7 +102,7 @@ class WeiboListener(object):
     def expand_short_url(self, short_url):
         responsejson = self.client.get.short_url__expand(url_short='http://t.cn/RZNTSzw')
         return responsejson['urls'][0]['url_long']
-        # not use api way
+        # Another way to get full url
         # response = urllib2.urlopen(short_url)
         # return response.url
 
@@ -102,22 +120,9 @@ class WeiboListener(object):
         return url
 
     def dump_mentions_to_database(self, mentions):
-        database_file = 'my.db'
-        file_path = os.getcwd() + os.path.sep
-        database_file_path = file_path + database_file
 
-        conn = sqlite3.connect(database_file_path)
-        print "Opened database successfully"
-        conn.execute('''CREATE TABLE IF NOT EXISTS LINKS
-               (
-               USERID INT NOT NULL,
-               CREATED_AT datetime,
-               MID INT NOT NULL,
-               YOUTUBE_URL CHAR(120) PRIMARY KEY,
-               DOWNLOADED BOOLEAN,
-               YOUKU_URL CHAR(120),
-               UPLOADED BOOLEAN
-               );''')
+
+
         statuses = mentions['statuses']
 
         for oneMsg in statuses:
@@ -150,7 +155,7 @@ if __name__ == "__main__":
     # for i in mentions['statuses']:
     #     print i['user']['id'], i['text']
     listener.dump_mentions_to_database(mentions=mentions)
-        # i += 1
-        # time.sleep(600)
+    # i += 1
+    # time.sleep(600)
 
 
