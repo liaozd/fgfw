@@ -70,5 +70,3 @@ access_token.txt
 # tmp file
 src/tmp
 
-# pyYouku-master config file
-config.py

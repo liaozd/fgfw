@@ -12,8 +12,8 @@ from keyfile import CLIENT_ID, ACCESS_TOKEN
 def upload():
     file_info = {
       'title': u'my test',
-      'tags': 'upload test,IO,',
-      'description': '1st upload test',
+      'tags': 'youtube',
+      'description': 'weibo @liaozd',
     }
     file = "/tmp/PAY WHAT YOU WANT for Django tutorials!-CQmBKYtLr5A.mp4"
     youku = YoukuUpload(CLIENT_ID, ACCESS_TOKEN, file)

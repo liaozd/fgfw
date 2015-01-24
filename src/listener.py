@@ -3,8 +3,8 @@
 import sqlite3
 import webbrowser
 import sys
-import os
 import re
+from config import *
 
 __version__ = '1.0'
 __author__ = 'http://weibo.com/liaozd'
@@ -32,27 +32,24 @@ class WeiboListener(object):
         save_access_token_file = 'access_token.txt'
         file_path = os.getcwd() + os.path.sep
         self.access_token_file_path = file_path + save_access_token_file
-
         self.client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
 
-        #build database
-        database_file = 'my.db'
-        file_path = os.getcwd() + os.path.sep
-        self.database_file_path = file_path + database_file
-        conn = sqlite3.connect(self.database_file_path)
-        print "Opened database successfully"
+        # build database if not there
+        conn = sqlite3.connect(DATABASE)
+        print "Connect to database successfully"
         conn.execute('''CREATE TABLE IF NOT EXISTS LINKS
                     (
                     USERID INT NOT NULL,
                     CREATED_AT datetime,
                     MID INT NOT NULL,
                     YOUTUBE_URL CHAR(120) PRIMARY KEY,
-                    TITLE CHAR(200)
-                    DOWNLOADED BOOLEAN,
+                    TITLE CHAR(200),
+                    DOWNLOADED BOOLEAN NOT NULL DEFAULT 0,
                     YOUKU_URL CHAR(120),
-                    UPLOADED BOOLEAN,
-
+                    UPLOADED BOOLEAN NOT NULL DEFAULT 0
                     );''')
+        conn.commit()
+
     def make_access_token(self):
         authorize_url = self.client.get_authorize_url(REDIRECT_URL)
         print(authorize_url)
@@ -98,6 +95,10 @@ class WeiboListener(object):
             self.make_access_token()
         return False
 
+    def filter_url(self, text):
+        # from weibo text msg filter out the short url
+        url = re.findall(r'http://t.cn/[\w+]{7,}', text)
+        return url
 
     def expand_short_url(self, short_url):
         responsejson = self.client.get.short_url__expand(url_short='http://t.cn/RZNTSzw')
@@ -106,27 +107,18 @@ class WeiboListener(object):
         # response = urllib2.urlopen(short_url)
         # return response.url
 
-
-    def get_resent_mentions(self, count=10):
+    def get_resent_mentions(self, count=15):
         # return mentions in json format
         # weibo api doc
         # http://open.weibo.com/wiki/2/statuses/mentions
         mentions = self.client.get.statuses__mentions(count=count)
         return mentions
 
-    def filter_url(self, text):
-        # from weibo text msg filter out the short url
-        url = re.findall(r'http://t.cn/[\w+]{7,}', text)
-        return url
-
     def dump_mentions_to_database(self, mentions):
-
-
-
+        conn = sqlite3.connect(DATABASE)
         statuses = mentions['statuses']
-
         for oneMsg in statuses:
-            print oneMsg['user']['id'], oneMsg['mid'], oneMsg['created_at']
+            print oneMsg['user']['id'], oneMsg['mid'], oneMsg['created_at'], oneMsg['text']
             user_id = oneMsg['user']['id']
             mid = oneMsg['mid']
             created_at = oneMsg['created_at']
@@ -136,7 +128,11 @@ class WeiboListener(object):
             youtube_url = self.expand_short_url(short_url[-1])
             print youtube_url
             try:
-                conn.execute('INSERT INTO LINKS (USERID, MID, YOUTUBE_URL) VALUES ({0}, {1}, "{2}")'.format(user_id, mid, youtube_url))
+                conn.execute('INSERT INTO LINKS (USERID, CREATED_AT, MID, YOUTUBE_URL) VALUES ({0},"{1}",{2},"{3}")'.format(
+                    user_id,
+                    created_at,
+                    mid,
+                    youtube_url))
                 print youtube_url
             except sqlite3.IntegrityError:
                 print 'Youtube link already exists: {}'.format(youtube_url)
@@ -146,7 +142,6 @@ class WeiboListener(object):
 
 if __name__ == "__main__":
     listener = WeiboListener()
-
     listener.apply_access_token()
     # i = 1
     # while i < 10:
