@@ -20,12 +20,13 @@ def downloadTo(youtubeURL, destination="download/"):
     # print(video)
     return video_filepath
 
+
 def puller():
     db = sqlite3.connect(DATABASE)
     c = db.cursor()
     print "Checking Database for new youtube entry"
     # SELECT the oldest youtube link have not been downloaded
-    sql = 'SELECT  YOUTUBE_URL, CREATED_AT, DOWNLOADED FROM LINKS WHERE DOWNLOADED==0 ORDER BY CREATED_AT ASC LIMIT 1;'
+    sql = 'SELECT  YOUTUBE_URL FROM LINKS WHERE DOWNLOADED==0 ORDER BY CREATED_AT ASC LIMIT 1;'
     c.execute(sql)
     youtubeURL = c.fetchone()
     print youtubeURL
