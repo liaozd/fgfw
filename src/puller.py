@@ -29,9 +29,6 @@ if __name__ == "__main__":
     c.execute('SELECT YOUTUBE_URL, DOWNLOADED FROM LINKS WHERE DOWNLOADED==0;')
     print c.fetchone()
 
-
-
-
     youtubeURL = 'http://www.youtube.com/watch?v=BaW_jenozKc'
     puller(youtubeURL)
 

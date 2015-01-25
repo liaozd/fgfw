@@ -4,6 +4,8 @@ import sqlite3
 import webbrowser
 import sys
 import re
+import dateutil.parser
+
 from config import *
 
 __version__ = '1.0'
@@ -122,6 +124,8 @@ class WeiboListener(object):
             user_id = oneMsg['user']['id']
             mid = oneMsg['mid']
             created_at = oneMsg['created_at']
+            created_at = dateutil.parser.parse(created_at)
+            created_at = created_at.strftime("%Y-%m-%d %H:%M:%S")
             short_url = self.filter_url(oneMsg['text'])
             if not short_url:
                 continue
