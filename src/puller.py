@@ -3,12 +3,12 @@ import youtube_dl
 from config import DATABASE
 
 
-def puller(youtubeURL):
-    ydl = youtube_dl.YoutubeDL({'outtmpl': '%(title)s.%(ext)s'})
+def download(youtubeURL, destination=""):
+    ydl = youtube_dl.YoutubeDL({'outtmpl': 'download/%(title)s.%(ext)s'})
     with ydl:
         result = ydl.extract_info(
             youtubeURL,
-            download=False, # if you just want to extract the info
+            # download=False, # if you just want to extract the info
         )
 
     if 'entries' in result:
@@ -18,17 +18,20 @@ def puller(youtubeURL):
         # Just one video
         video = result
     print(video)
-    video_url = video['url']
-    print(video_url)
 
 
-if __name__ == "__main__":
+def puller():
     conn = sqlite3.connect(DATABASE)
     c = conn.cursor()
     print "Checking Database for new youtube entry"
-    c.execute('SELECT YOUTUBE_URL, DOWNLOADED FROM LINKS WHERE DOWNLOADED==0;')
+    c.execute('SELECT CREATED_AT, YOUTUBE_URL, DOWNLOADED FROM LINKS WHERE DOWNLOADED==0;')
     print c.fetchone()
+    print c.fetchone()
+    conn.close()
 
+
+if __name__ == "__main__":
+    puller()
     youtubeURL = 'http://www.youtube.com/watch?v=BaW_jenozKc'
-    puller(youtubeURL)
+    download(youtubeURL)
 

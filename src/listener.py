@@ -37,9 +37,10 @@ class WeiboListener(object):
         self.client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
 
         # build database if not there
-        conn = sqlite3.connect(DATABASE)
+        db = sqlite3.connect(DATABASE)
         print "Connect to database successfully"
-        conn.execute('''CREATE TABLE IF NOT EXISTS LINKS
+        cursor = db.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS LINKS
                     (
                     USERID INT NOT NULL,
                     CREATED_AT datetime,
@@ -49,8 +50,9 @@ class WeiboListener(object):
                     DOWNLOADED BOOLEAN NOT NULL DEFAULT 0,
                     YOUKU_URL CHAR(120),
                     UPLOADED BOOLEAN NOT NULL DEFAULT 0
-                    );''')
-        conn.commit()
+                    )''')
+        db.commit()
+        db.close()
 
     def make_access_token(self):
         authorize_url = self.client.get_authorize_url(REDIRECT_URL)
@@ -103,7 +105,7 @@ class WeiboListener(object):
         return url
 
     def expand_short_url(self, short_url):
-        responsejson = self.client.get.short_url__expand(url_short='http://t.cn/RZNTSzw')
+        responsejson = self.client.get.short_url__expand(url_short=short_url)
         return responsejson['urls'][0]['url_long']
         # Another way to get full url
         # response = urllib2.urlopen(short_url)
@@ -117,7 +119,8 @@ class WeiboListener(object):
         return mentions
 
     def dump_mentions_to_database(self, mentions):
-        conn = sqlite3.connect(DATABASE)
+        db = sqlite3.connect(DATABASE)
+        cursor = db.cursor()
         statuses = mentions['statuses']
         for oneMsg in statuses:
             print oneMsg['user']['id'], oneMsg['mid'], oneMsg['created_at'], oneMsg['text']
@@ -130,18 +133,18 @@ class WeiboListener(object):
             if not short_url:
                 continue
             youtube_url = self.expand_short_url(short_url[-1])
-            print youtube_url
             try:
-                conn.execute('INSERT INTO LINKS (USERID, CREATED_AT, MID, YOUTUBE_URL) VALUES ({0},"{1}",{2},"{3}")'.format(
+                sql = 'INSERT INTO LINKS (USERID, CREATED_AT, MID, YOUTUBE_URL) VALUES ({0},"{1}",{2},"{3}");'.format(
                     user_id,
                     created_at,
                     mid,
-                    youtube_url))
-                print youtube_url
+                    youtube_url)
+                cursor.execute(sql)
+                print youtube_url, "inserted"
             except sqlite3.IntegrityError:
                 print 'Youtube link already exists: {}'.format(youtube_url)
-        conn.commit()
-        conn.close()
+        db.commit()
+        db.close()
 
 
 if __name__ == "__main__":
