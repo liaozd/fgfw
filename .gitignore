@@ -72,3 +72,4 @@ src/tmp
 
 # youtube video download page
 download/
+*.mp4
