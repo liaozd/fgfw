@@ -7,6 +7,6 @@ pip install -r requirements.txt
 
 listener -> db
 
-db -> puller
+puller <- db 
 
-db -> pusher
+pusher <- db 
