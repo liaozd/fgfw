@@ -21,12 +21,13 @@ def upload():
     sql_result = c.fetchone()
     if sql_result:
         filepath, youtubeURL = sql_result
+        basename = os.path.basename(filepath).split('.')[0]
         file_info = {
-          'title': os.path.basename(filepath).split('.')[0],
+          'title': basename,
           'tags': 'youtube',
           'description': 'Automatically upload by weibo @liaozd, origin URL is: {0}'.format(youtubeURL),
         }
-        print "Uploading to youku.com"
+        print 'Uploading "{0}" to youku.com'.format(basename)
         youku = YoukuUpload(CLIENT_ID, ACCESS_TOKEN, filepath)
         youku.upload(file_info)
         print "Uploading finished"

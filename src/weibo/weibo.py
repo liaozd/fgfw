@@ -17,6 +17,7 @@ import urllib
 import urllib2
 import logging
 
+
 def _obj_hook(pairs):
     '''
     convert json object to python object.
@@ -25,6 +26,7 @@ def _obj_hook(pairs):
     for k, v in pairs.iteritems():
         o[str(k)] = v
     return o
+
 
 class APIError(StandardError):
     '''
@@ -39,6 +41,7 @@ class APIError(StandardError):
     def __str__(self):
         return 'APIError: %s: %s, request: %s' % (self.error_code, self.error, self.request)
 
+
 class JsonObject(dict):
     '''
     general json object that can bind any fields but also act as a dict.
@@ -49,6 +52,7 @@ class JsonObject(dict):
     def __setattr__(self, attr, value):
         self[attr] = value
 
+
 def _encode_params(**kw):
     '''
     Encode parameters.
@@ -58,6 +62,7 @@ def _encode_params(**kw):
         qv = v.encode('utf-8') if isinstance(v, unicode) else str(v)
         args.append('%s=%s' % (k, urllib.quote(qv)))
     return '&'.join(args)
+
 
 def _encode_multipart(**kw):
     '''
@@ -87,6 +92,7 @@ def _encode_multipart(**kw):
 
 _CONTENT_TYPES = { '.png': 'image/png', '.gif': 'image/gif', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.jpe': 'image/jpeg' }
 
+
 def _guess_content_type(ext):
     return _CONTENT_TYPES.get(ext, 'application/octet-stream')
 
@@ -94,17 +100,21 @@ _HTTP_GET = 0
 _HTTP_POST = 1
 _HTTP_UPLOAD = 2
 
+
 def _http_get(url, authorization=None, **kw):
     logging.info('GET %s' % url)
     return _http_call(url, _HTTP_GET, authorization, **kw)
+
 
 def _http_post(url, authorization=None, **kw):
     logging.info('POST %s' % url)
     return _http_call(url, _HTTP_POST, authorization, **kw)
 
+
 def _http_upload(url, authorization=None, **kw):
     logging.info('MULTIPART POST %s' % url)
     return _http_call(url, _HTTP_UPLOAD, authorization, **kw)
+
 
 def _http_call(url, method, authorization, **kw):
     '''
@@ -128,7 +138,8 @@ def _http_call(url, method, authorization, **kw):
     r = json.loads(body, object_hook=_obj_hook)
     if hasattr(r, 'error_code'):
         raise APIError(r.error_code, getattr(r, 'error', ''), getattr(r, 'request', ''))
-    return r 
+    return r
+
 
 class HttpObject(object):
 
@@ -142,6 +153,7 @@ class HttpObject(object):
                 raise APIError('21327', 'expired_token', attr)
             return _http_call('%s%s.json' % (self.client.api_url, attr.replace('__', '/')), self.method, self.client.access_token, **kw)
         return wrap
+
 
 class APIClient(object):
     '''
@@ -172,10 +184,10 @@ class APIClient(object):
         if not redirect:
             raise APIError('21305', 'Parameter absent: redirect_uri', 'OAuth2 request')
         return '%s%s?%s' % (self.auth_url, 'authorize', \
-                _encode_params(client_id = self.client_id, \
-                        response_type = 'code', \
-                        display = display, \
-                        redirect_uri = redirect))
+                            _encode_params(client_id = self.client_id, \
+                                           response_type = 'code', \
+                                           display = display, \
+                                           redirect_uri = redirect))
 
     def request_access_token(self, code, redirect_uri=None):
         '''
@@ -185,10 +197,10 @@ class APIClient(object):
         if not redirect:
             raise APIError('21305', 'Parameter absent: redirect_uri', 'OAuth2 request')
         r = _http_post('%s%s' % (self.auth_url, 'access_token'), \
-                client_id = self.client_id, \
-                client_secret = self.client_secret, \
-                redirect_uri = redirect, \
-                code = code, grant_type = 'authorization_code')
+                       client_id = self.client_id, \
+                       client_secret = self.client_secret, \
+                       redirect_uri = redirect, \
+                       code = code, grant_type = 'authorization_code')
         #print 'sina_expires_in:' + str(r.expires_in)
         r.expires_in += int(time.time())
         return r
