@@ -48,6 +48,8 @@ class WeiboListener(object):
                     YOUTUBE_URL CHAR(120) PRIMARY KEY,
                     TITLE CHAR(200),
                     DOWNLOADED BOOLEAN NOT NULL DEFAULT 0,
+                    CATEGORIES CHAR(100),
+                    DESCRIPTION CHAR(300),
                     FILEPATH CHAR(220),
                     YOUKU_URL CHAR(120),
                     UPLOADED BOOLEAN NOT NULL DEFAULT 0
