@@ -43,4 +43,5 @@ def upload():
         db.commit()
     db.close()
 
-upload()
+if __name__ == '__main__':
+    upload()

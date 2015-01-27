@@ -36,6 +36,7 @@ def downloader(youtubeURL, destination="download/"):
 
 
 def puller():
+    downloadFlag = False
     db = sqlite3.connect(DATABASE)
     c = db.cursor()
     print "Checking Database for new youtube entry"
@@ -59,8 +60,10 @@ def puller():
         c.execute(sql)
         print "Download finished!"
         print "UPDATE DATABASE WITH FILE PATH: ", r['FILEPATH']
+        downloadFlag = True
     db.commit()
     db.close()
+    return downloadFlag
 
 if __name__ == "__main__":
     puller()
