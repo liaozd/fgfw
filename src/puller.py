@@ -15,7 +15,7 @@ def downloader(youtubeURL, destination="download/"):
     print "Start to download {}".format(filepath)
     ydl = youtube_dl.YoutubeDL({'outtmpl': filepath})
     r = ydl.extract_info(youtubeURL, download=True)
-    r['FILEPATH'] = filepath
+    r['filepath'] = filepath
     for key in r:
         print key, ":", r[key]
 
@@ -41,7 +41,7 @@ def puller():
     c = db.cursor()
     print "Checking Database for new youtube entry"
     # SELECT the oldest youtube link have not been downloaded
-    sql = 'SELECT  YOUTUBE_URL FROM LINKS WHERE DOWNLOADED==0 ORDER BY CREATED_AT ASC LIMIT 1;'
+    sql = 'SELECT YOUTUBE_URL FROM LINKS WHERE DOWNLOADED==0 ORDER BY CREATED_AT ASC LIMIT 1;'
     c.execute(sql)
     youtubeURL = c.fetchone()
     print youtubeURL
@@ -49,12 +49,13 @@ def puller():
         youtubeURL = youtubeURL[0]
         # Start download and return the path name
         r = downloader(youtubeURL)
-        print r['FILEPATH']
+        print r['filepath']
         print r['categories']
         print r['description']
         print youtubeURL
-        sql = 'UPDATE LINKS SET FILEPATH="{0}", DOWNLOADED=1, CATEGORIES="{1}" WHERE YOUTUBE_URL="{2}";'.format(
-            r['FILEPATH'],
+        sql = 'UPDATE LINKS SET TITLE="{0}",FILEPATH="{1}", DOWNLOADED=1, CATEGORIES="{2}" WHERE YOUTUBE_URL="{3}";'.format(
+            r['title'],
+            r['filepath'],
             r['categories'],
             youtubeURL)
         c.execute(sql)
@@ -67,3 +68,4 @@ def puller():
 
 if __name__ == "__main__":
     puller()
+
