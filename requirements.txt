@@ -1,3 +1,4 @@
+python-dateutil==2.4.0
 requests==2.5.1
-youku==0.0.6
+six==1.9.0
 youtube-dl==2015.1.23.4

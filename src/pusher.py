@@ -6,9 +6,16 @@ __author__ = 'liao'
 # api from https://github.com/Davidigest/pyYouku
 # youku upload management page http://i.youku.com/u/videos
 
-from youku import YoukuUpload
+
 from keyfile import CLIENT_ID, ACCESS_TOKEN
 from config import *
+# import youku # pip install youku
+
+# my fork youku
+import sys
+sys.path.append('/home/liao/git-repos/youku/youku/')
+import imp
+YoukuUpload = imp.load_source('YoukuUpload', '/home/liao/git-repos/youku/youku/youku_upload.py')
 
 
 def upload():
@@ -27,12 +34,13 @@ def upload():
           'tags': 'youtube',
           'description': 'Automatically upload by weibo @liaozd, origin URL is: {0}'.format(youtubeURL),
         }
+        youku = YoukuUpload.YoukuUpload(CLIENT_ID, ACCESS_TOKEN, filepath)
         print 'Uploading "{0}" to youku.com'.format(basename)
-        youku = YoukuUpload(CLIENT_ID, ACCESS_TOKEN, filepath)
-        youku.upload(file_info)
+        print youku.upload(file_info)
         print "Uploading finished"
         sql = 'UPDATE LINKS SET UPLOADED=1 WHERE YOUTUBE_URL="{0}";'.format(youtubeURL)
         c.execute(sql)
         db.commit()
     db.close()
+
 upload()

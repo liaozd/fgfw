@@ -12,8 +12,8 @@ __version__ = '1.0'
 __author__ = 'http://weibo.com/liaozd'
 
 # the api is from:http://michaelliao.github.com/sinaweibopy/
-from weibo.weibo import APIClient
-from weibo.retry import *
+from helper.weibo import APIClient
+from helper.retry import *
 from keyfile import *
 try:
     import json
@@ -154,7 +154,8 @@ if __name__ == "__main__":
     # i = 1
     # while i < 10:
     #     print time.strftime("%Y-%m-%d %A %X %Z", time.localtime())
-    mentions = listener.get_resent_mentions(count=10)
+    mentions = listener.get_resent_mentions(count=15)
+    print len(mentions)
     # for i in mentions['statuses']:
     #     print i['user']['id'], i['text']
     listener.dump_mentions_to_database(mentions=mentions)
