@@ -13,12 +13,12 @@ def myYoutubeDL(youtubeURL, destination="download/"):
     r = ydl.extract_info(youtubeURL, download=False)
     basename = '.'.join((slugify(r['title']), r['ext']))
     filepath = os.path.join(destination, basename)
-    print "Start to download {}".format(filepath)
+    # print "Start to download {}".format(filepath)
     ydl = youtube_dl.YoutubeDL({'outtmpl': filepath})
     r = ydl.extract_info(youtubeURL, download=True)
     r['filepath'] = filepath
-    for key in r:
-        print key, ":", r[key]
+    # for key in r:
+    #     print key, ":", r[key]
     # if you just want to extract the info
     # >>> import youtube_dl as yt
     # >>> help(yt)

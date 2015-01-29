@@ -25,9 +25,9 @@ from pusher import pusher
 
 import thread
 try:
-    thread.start_new_thread(listener, (10, 360,))
-    thread.start_new_thread(puller, (180,))
-    thread.start_new(pusher, (190,))
+    thread.start_new_thread(listener, (10, 400,))
+    thread.start_new_thread(puller, (500,))
+    thread.start_new(pusher, (360,))
 except:
    print "Error: unable to start thread"
 
