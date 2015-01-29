@@ -32,16 +32,19 @@ def uploader():
         print categories
         file_info = {
           'title': title,
-          'tags': 'Howto Style',
+          'tags': 'No Tag for now',
           'description': 'Automatically upload by weibo @liaozd, origin URL is: {0}'.format(youtubeURL),
         }
         youku = YoukuUpload.YoukuUpload(CLIENT_ID, ACCESS_TOKEN, filepath)
         print 'Uploading "{0}" to youku.com'.format(filepath)
-        print youku.upload(file_info)
-        print "Uploading finished"
-        sql = 'UPDATE LINKS SET UPLOADED=1 WHERE YOUTUBE_URL="{0}";'.format(youtubeURL)
-        c.execute(sql)
-        db.commit()
+        try:
+            print youku.upload(file_info)
+            print "Uploading finished"
+            sql = 'UPDATE LINKS SET UPLOADED=1 WHERE YOUTUBE_URL="{0}";'.format(youtubeURL)
+            c.execute(sql)
+            db.commit()
+        finally:
+            print "uploading youku failed, will continue next round"
     db.close()
 
 

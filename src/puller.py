@@ -6,7 +6,7 @@ from config import DATABASE
 from helper.slugify import slugify
 
 
-def downloader(youtubeURL, destination="download/"):
+def myYoutubeDL(youtubeURL, destination="download/"):
     print "Get video info"
     # prepare filename and path to save the file
     ydl = youtube_dl.YoutubeDL()
@@ -19,7 +19,6 @@ def downloader(youtubeURL, destination="download/"):
     r['filepath'] = filepath
     for key in r:
         print key, ":", r[key]
-
     # if you just want to extract the info
     # >>> import youtube_dl as yt
     # >>> help(yt)
@@ -37,7 +36,6 @@ def downloader(youtubeURL, destination="download/"):
 
 
 def downloader():
-
     downloadFlag = False
     db = sqlite3.connect(DATABASE)
     c = db.cursor()
@@ -49,7 +47,7 @@ def downloader():
     if youtubeURL:
         youtubeURL = youtubeURL[0]
         # Start download and return the path name
-        r = downloader(youtubeURL)
+        r = myYoutubeDL(youtubeURL)
         print r['filepath']
         print r['categories']
         print r['description']
@@ -61,7 +59,7 @@ def downloader():
             youtubeURL)
         c.execute(sql)
         print "Download finished!"
-        print "UPDATE DATABASE WITH FILE PATH: ", r['FILEPATH']
+        print "UPDATE DATABASE WITH FILE PATH: ", r['filepath']
         downloadFlag = True
     db.commit()
     db.close()

@@ -154,7 +154,7 @@ weiboer = WeiboListener()
 weiboer.apply_access_token()
 
 
-def listener(count=10, sleeptime=180):
+def listener(count=10, sleeptime=280):
     """listen to my weibo and push new mention to db
     """
     while True:
