@@ -126,7 +126,7 @@ class WeiboListener(object):
         cursor = db.cursor()
         statuses = mentions['statuses']
         for oneMsg in statuses:
-            print oneMsg['user']['id'], oneMsg['mid'], oneMsg['created_at'], oneMsg['text']
+            # print oneMsg['user']['id'], oneMsg['mid'], oneMsg['created_at'], oneMsg['text']
             user_id = oneMsg['user']['id']
             mid = oneMsg['mid']
             created_at = oneMsg['created_at']
@@ -143,25 +143,30 @@ class WeiboListener(object):
                     mid,
                     youtube_url)
                 cursor.execute(sql)
-                print youtube_url, "inserted"
+                print "Update DB - insert: ", youtube_url,
             except sqlite3.IntegrityError:
-                print 'Youtube link already exists: {}'.format(youtube_url)
+                continue
+                # print 'Youtube link already exists: {}'.format(youtube_url)
         db.commit()
         db.close()
 
+weiboer = WeiboListener()
+weiboer.apply_access_token()
+
+
+def listener(count=15):
+    """listen to my weibo and push new mention to db
+    """
+    mentions = weiboer.get_resent_mentions(count=count)
+    print "{0} listener - last weibo mention is {1}".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()), mentions['statuses'][0]['created_at'])
+    weiboer.dump_mentions_to_database(mentions=mentions)
+
 
 if __name__ == "__main__":
-    listener = WeiboListener()
-    listener.apply_access_token()
-    # i = 1
-    # while i < 10:
-    #     print time.strftime("%Y-%m-%d %A %X %Z", time.localtime())
-    mentions = listener.get_resent_mentions(count=15)
-    print len(mentions)
-    # for i in mentions['statuses']:
-    #     print i['user']['id'], i['text']
-    listener.dump_mentions_to_database(mentions=mentions)
-    # i += 1
-    # time.sleep(600)
+    i = 1
+    while i < 4:
+        listener(10)
+        i += 1
+        time.sleep(1)
 
 
