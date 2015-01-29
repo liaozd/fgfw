@@ -154,19 +154,15 @@ weiboer = WeiboListener()
 weiboer.apply_access_token()
 
 
-def listener(count=15):
+def listener(count=10, sleeptime=180):
     """listen to my weibo and push new mention to db
     """
-    mentions = weiboer.get_resent_mentions(count=count)
-    print "{0} listener - last weibo mention is {1}".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()), mentions['statuses'][0]['created_at'])
-    weiboer.dump_mentions_to_database(mentions=mentions)
-
+    while True:
+        mentions = weiboer.get_resent_mentions(count=count)
+        print "{0} listener - last weibo mention is {1}".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()), mentions['statuses'][0]['created_at'])
+        weiboer.dump_mentions_to_database(mentions=mentions)
+        time.sleep(sleeptime)
 
 if __name__ == "__main__":
-    i = 1
-    while i < 4:
-        listener(10)
-        i += 1
-        time.sleep(1)
-
+    listener()
 

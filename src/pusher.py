@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sqlite3
+import time
 
 __author__ = 'liao'
 
@@ -18,7 +19,7 @@ import imp
 YoukuUpload = imp.load_source('YoukuUpload', '/home/liao/git-repos/youku/youku/youku_upload.py')
 
 
-def upload():
+def uploader():
 
     db = sqlite3.connect(DATABASE)
     c = db.cursor()
@@ -43,5 +44,13 @@ def upload():
         db.commit()
     db.close()
 
+
+def pusher(sleeptime=190):
+    while True:
+        print "{0} pusher start".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()))
+        uploader()
+        print "pusher takes a snap for {0}s".format(sleeptime)
+        time.sleep(sleeptime)
+
 if __name__ == '__main__':
-    upload()
+    pusher()
