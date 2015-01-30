@@ -110,9 +110,13 @@ class WeiboListener(object):
     def expand_short_url(self, short_url):
         responsejson = self.client.get.short_url__expand(url_short=short_url)
         return responsejson['urls'][0]['url_long']
+        # TODO URL - Sentry
         # Another way to get full url
         # response = urllib2.urlopen(short_url)
         # return response.url
+
+    def reply_to_mentioner(self):pass
+        # TODO send weibo mentioner a msg
 
     def get_resent_mentions(self, count=15):
         # return mentions in json format
