@@ -110,10 +110,16 @@ class WeiboListener(object):
     def expand_short_url(self, short_url):
         responsejson = self.client.get.short_url__expand(url_short=short_url)
         return responsejson['urls'][0]['url_long']
-        # TODO URL - Sentry
         # Another way to get full url
         # response = urllib2.urlopen(short_url)
         # return response.url
+
+    def youtube_url_sentry(self, long_url):
+        # TODO URL - Sentry
+        # sample right https://www.youtube.com/watch?v=pA5MFlY5Klc
+        url = re.findall(r'https://www.youtube.com/watch?v=', long_url)
+        print url
+        
 
     def reply_to_mentioner(self):pass
         # TODO send weibo mentioner a msg
@@ -137,7 +143,9 @@ class WeiboListener(object):
             created_at = dateutil.parser.parse(created_at)
             created_at = created_at.strftime("%Y-%m-%d %H:%M:%S")
             short_url = self.filter_url(oneMsg['text'])
-            if not short_url:
+            if short_url:
+                youtube_url = self.expand_short_url(short_url[-1])
+            else:
                 continue
             youtube_url = self.expand_short_url(short_url[-1])
             try:
