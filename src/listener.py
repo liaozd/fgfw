@@ -103,9 +103,12 @@ class WeiboListener(object):
         return False
 
     def filter_url(self, text):
-        # from weibo text msg filter out the short url
+        # from weibo text msg, take out the short url in the last
         url = re.findall(r'http://t.cn/[\w+]{7,}', text)
-        return url
+        if url:
+            return url[-1]
+        else:
+            return None
 
     def expand_short_url(self, short_url):
         responsejson = self.client.get.short_url__expand(url_short=short_url)
@@ -114,12 +117,24 @@ class WeiboListener(object):
         # response = urllib2.urlopen(short_url)
         # return response.url
 
-    def youtube_url_sentry(self, long_url):
-        # TODO URL - Sentry
-        # sample right https://www.youtube.com/watch?v=pA5MFlY5Klc
-        url = re.findall(r'https://www.youtube.com/watch?v=', long_url)
-        print url
-        
+    def youtube_url_sentry(self, short_url):
+        # sample url
+        # single video: https://www.youtube.com/watch?v=pA5MFlY5Klc
+        # playlist: https://www.youtube.com/watch?v=mdcA5fR91S8&list=PLOU2XLYxmsII_38oWcnQzXs9K9HKBMg-e
+        #           https://www.youtube.com/watch?v=IXvpvvb67hw&list=PLA64AFAE28B8DD0FD
+        # long_url = "https://www.youtube.com/watch?v=IXvpvvb67hw&list=PLA64AFAE28B8DD0FD"
+        if short_url is None:
+            return None
+        long_url = self.expand_short_url(short_url)
+        single_url = re.findall(r'^https://www.youtube.com/watch\?v=[\w+]{11}$', long_url)
+        playlist_url = re.findall(r'^https://www.youtube.com/watch\?v=[\w+]{11}&list=$[\w+]{18,}$', long_url)
+        if single_url:
+            return single_url[0]
+        elif playlist_url:
+            return playlist_url
+        else:
+            return None
+
 
     def reply_to_mentioner(self):pass
         # TODO send weibo mentioner a msg
@@ -143,11 +158,12 @@ class WeiboListener(object):
             created_at = dateutil.parser.parse(created_at)
             created_at = created_at.strftime("%Y-%m-%d %H:%M:%S")
             short_url = self.filter_url(oneMsg['text'])
-            if short_url:
-                youtube_url = self.expand_short_url(short_url[-1])
+            youtube_url = self.youtube_url_sentry(short_url)
+            if youtube_url:
+                print youtube_url
+                self.reply_to_mentioner()
             else:
                 continue
-            youtube_url = self.expand_short_url(short_url[-1])
             try:
                 sql = 'INSERT INTO LINKS (USERID, CREATED_AT, MID, YOUTUBE_URL) VALUES ({0},"{1}",{2},"{3}");'.format(
                     user_id,
@@ -155,10 +171,10 @@ class WeiboListener(object):
                     mid,
                     youtube_url)
                 cursor.execute(sql)
-                print "Update DB - insert: ", youtube_url,
+                print "Update DB - INSERT: ", youtube_url,
             except sqlite3.IntegrityError:
-                continue
                 # print 'Youtube link already exists: {}'.format(youtube_url)
+                continue
         db.commit()
         db.close()
 

@@ -27,6 +27,7 @@ def uploader():
     sql = 'SELECT TITLE, CATEGORIES, FILEPATH, YOUTUBE_URL FROM LINKS WHERE UPLOADED==0 AND DOWNLOADED==1 ORDER BY CREATED_AT ASC LIMIT 1;'
     c.execute(sql)
     sql_result = c.fetchone()
+    print sql_result
     if sql_result:
         title, categories, filepath, youtubeURL = sql_result
         print categories
