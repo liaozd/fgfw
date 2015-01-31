@@ -126,8 +126,8 @@ class WeiboListener(object):
         if short_url is None:
             return None
         long_url = self.expand_short_url(short_url)
-        single_url = re.findall(r'^https://www.youtube.com/watch\?v=[\w+]{11}$', long_url)
-        playlist_url = re.findall(r'^https://www.youtube.com/watch\?v=[\w+]{11}&list=$[\w+]{18,}$', long_url)
+        single_url = re.findall(r'^https://www.youtube.com/watch\?v=[\w_%+-]{11}$', long_url)
+        playlist_url = re.findall(r'^https://www.youtube.com/watch\?v=[\w+]{11}&list=$[\w_%+-]{18,}$', long_url)
         if single_url:
             return single_url[0]
         elif playlist_url:
