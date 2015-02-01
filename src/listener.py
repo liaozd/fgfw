@@ -162,7 +162,6 @@ class WeiboListener(object):
             short_url = self.filter_url(oneMsg['text'])
             youtube_url = self.youtube_url_sentry(short_url)
             if youtube_url:
-                print youtube_url
                 self.reply_to_mentioner()
             else:
                 continue
@@ -174,7 +173,6 @@ class WeiboListener(object):
                     youtube_url)
                 cursor.execute(sql)
                 print "Update DB - INSERT: ", youtube_url
-
             except sqlite3.IntegrityError:
                 # print 'Youtube link already exists: {}'.format(youtube_url)
                 continue

@@ -49,13 +49,14 @@ def downloader():
         # Start download and return the path name
         r = myYoutubeDL(youtubeURL)
         print r['filepath']
-        print r['categories']
+        # categories is a single element list, and it is a equivalence to youku tag
+        if r['categories']:
+            categories = r['categories'][0]
         print r['description']
-        print youtubeURL
         sql = 'UPDATE LINKS SET TITLE="{0}",FILEPATH="{1}", DOWNLOADED=1, CATEGORIES="{2}" WHERE YOUTUBE_URL="{3}";'.format(
             r['title'],
             r['filepath'],
-            r['categories'],
+            categories,
             youtubeURL)
         c.execute(sql)
         print "Download finished!"
