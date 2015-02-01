@@ -72,7 +72,7 @@ def pusher(sleep_time=190):
     while True:
         print my_name.rjust(12, '+'), 'start at {0}'.format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()))
         if uploader():
-            time.sleep('5')
+            time.sleep(5)
         else:
             print my_name.rjust(12, '+'), 'takes a snap for {0}s'.format(sleep_time)
             time.sleep(sleep_time)
