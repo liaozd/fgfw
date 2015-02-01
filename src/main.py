@@ -1,6 +1,13 @@
 #!/usr/bin/python
 
-__author__ = 'liao'
+from listener import listener
+from puller import puller
+from pusher import pusher
+
+import thread
+
+__author__ = 'liao_zd@hotmail.com'
+
 '''
  +----------+                  
  | litsener +-----+            
@@ -18,16 +25,14 @@ __author__ = 'liao'
                      +--------+
 '''
 
+listener_sleeptime = 300
+puller_sleeptime = 500
+pusher_sleeptime = 360
 
-from listener import listener
-from puller import puller
-from pusher import pusher
-
-import thread
 try:
-    thread.start_new_thread(listener, (10, 400,))
-    thread.start_new_thread(puller, (500,))
-    thread.start_new(pusher, (360,))
+    thread.start_new_thread(listener, (10, listener_sleeptime,))
+    thread.start_new_thread(puller, (puller_sleeptime,))
+    thread.start_new(pusher, (pusher_sleeptime,))
 except:
    print "Error: unable to start thread"
 
