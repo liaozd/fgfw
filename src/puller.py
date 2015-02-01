@@ -36,7 +36,7 @@ def myYoutubeDL(youtubeURL, destination="download/"):
 
 
 def downloader():
-    downloadFlag = False
+    download_flag = False
     db = sqlite3.connect(DATABASE)
     c = db.cursor()
     print "downloader Checking Database for new youtube entry"
@@ -60,17 +60,18 @@ def downloader():
         c.execute(sql)
         print "Download finished!"
         print "UPDATE DATABASE WITH FILE PATH: ", r['filepath']
-        downloadFlag = True
+        download_flag = True
     db.commit()
     db.close()
-    return downloadFlag
+    return download_flag
 
 
 def puller(sleeptime=190):
+    my_name = "puller"
     while True:
-        print "{0} puller start".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()))
+        print my_name.rjust(10,'+'), " start at {0}".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()))
         downloader()
-        print "puller takes a snap for {0}s".format(sleeptime)
+        print my_name.rjust(10,'+'), " takes a snap for {0}s".format(sleeptime)
         time.sleep(sleeptime)
 
 if __name__ == "__main__":

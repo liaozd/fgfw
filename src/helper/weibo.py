@@ -181,6 +181,7 @@ class APIClient(object):
         return the authroize url that should be redirect.
         '''
         redirect = redirect_uri if redirect_uri else self.redirect_uri
+        # TODO add links if can redirect url
         if not redirect:
             raise APIError('21305', 'Parameter absent: redirect_uri', 'OAuth2 request')
         return '%s%s?%s' % (self.auth_url, 'authorize', \

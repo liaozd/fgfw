@@ -131,13 +131,14 @@ class WeiboListener(object):
         if single_url:
             return single_url[0]
         elif playlist_url:
+            # TODO support playlist
             return playlist_url
         else:
             return None
 
     def reply_to_mentioner(self):
         pass
-        # TODO send weibo mentioner a msg
+        # TODO send weibo mentioner a email
         # No message api maybe Email
 
     def get_resent_mentions(self, count=15):
@@ -183,13 +184,13 @@ class WeiboListener(object):
 weiboer = WeiboListener()
 weiboer.apply_access_token()
 
-
 def listener(count=10, sleeptime=280):
     """listen to my weibo and push new mention to db
     """
+    my_name = 'listener'
     while True:
         mentions = weiboer.get_resent_mentions(count=count)
-        print "{0} listener - last weibo mention is {1}".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()), mentions['statuses'][0]['created_at'])
+        print my_name.rjust(10, '+'), "{0} - last weibo mention is {1}".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()), mentions['statuses'][0]['created_at'])
         weiboer.dump_mentions_to_database(mentions=mentions)
         time.sleep(sleeptime)
 
