@@ -135,9 +135,10 @@ class WeiboListener(object):
         else:
             return None
 
-
-    def reply_to_mentioner(self):pass
+    def reply_to_mentioner(self):
+        pass
         # TODO send weibo mentioner a msg
+        # No message api maybe Email
 
     def get_resent_mentions(self, count=15):
         # return mentions in json format
@@ -171,7 +172,8 @@ class WeiboListener(object):
                     mid,
                     youtube_url)
                 cursor.execute(sql)
-                print "Update DB - INSERT: ", youtube_url,
+                print "Update DB - INSERT: ", youtube_url
+
             except sqlite3.IntegrityError:
                 # print 'Youtube link already exists: {}'.format(youtube_url)
                 continue
