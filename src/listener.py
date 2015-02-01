@@ -131,7 +131,7 @@ class WeiboListener(object):
         if single_url:
             return single_url[0]
         elif playlist_url:
-            # TODO support playlist
+            # TODO support playlist, break playlist into individual url,and create a album name
             return playlist_url
         else:
             return None
@@ -140,6 +140,7 @@ class WeiboListener(object):
         pass
         # TODO send weibo mentioner a email
         # No message api maybe Email
+        # TODO if youtube url already existe return the correspondent youku url
 
     def get_resent_mentions(self, count=15):
         # return mentions in json format

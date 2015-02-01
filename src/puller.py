@@ -6,18 +6,18 @@ from config import DATABASE
 from helper.slugify import slugify
 
 
-def myYoutubeDL(youtubeURL, destination="download/"):
-    my_name = 'myYoutubeDL'
+def my_utub_dl(youtube_url, destination="download/"):
+    my_name = 'my_utub_dl'
     print my_name.rjust(10, '+'), 'is getting video info'
     # prepare filename and path to save the file
     ydl = youtube_dl.YoutubeDL()
-    r = ydl.extract_info(youtubeURL, download=False)
+    r = ydl.extract_info(youtube_url, download=False)
     basename = '.'.join((slugify(r['title']), r['ext']))
-    filepath = os.path.join(destination, basename)
-    # print "Start to download {}".format(filepath)
-    ydl = youtube_dl.YoutubeDL({'outtmpl': filepath})
-    r = ydl.extract_info(youtubeURL, download=True)
-    r['filepath'] = filepath
+    file_path = os.path.join(destination, basename)
+    # print "Start to download {}".format(file_path)
+    ydl = youtube_dl.YoutubeDL({'outtmpl': file_path})
+    r = ydl.extract_info(youtube_url, download=True)
+    r['file_path'] = file_path
     # for key in r:
     #     print key, ":", r[key]
     # if you just want to extract the info
@@ -45,35 +45,35 @@ def downloader():
     # SELECT the oldest youtube link have not been downloaded
     sql = 'SELECT YOUTUBE_URL FROM LINKS WHERE DOWNLOADED==0 ORDER BY CREATED_AT ASC LIMIT 1;'
     c.execute(sql)
-    youtubeURL = c.fetchone()
-    if youtubeURL:
-        youtubeURL = youtubeURL[0]
+    youtube_url = c.fetchone()
+    if youtube_url:
+        youtube_url = youtube_url[0]
         # Start download and return the path name
-        r = myYoutubeDL(youtubeURL)
+        r = my_utub_dl(youtube_url)
         # categories is a single element list, and it is a equivalence to youku tag
         if r['categories']:
             categories = r['categories'][0]
         sql = 'UPDATE LINKS SET TITLE="{0}",FILEPATH="{1}", DOWNLOADED=1, CATEGORIES="{2}" WHERE YOUTUBE_URL="{3}";'.format(
             r['title'],
-            r['filepath'],
+            r['file_path'],
             categories,
-            youtubeURL)
+            youtube_url)
         c.execute(sql)
         print my_name.rjust(10, '+'), 'download finished!'
-        print my_name.rjust(10, '+'), 'UPDATE DATABASE WITH FILE PATH: ', r['filepath']
+        print my_name.rjust(10, '+'), 'UPDATE DATABASE WITH FILE PATH: ', r['file_path']
         download_flag = True
     db.commit()
     db.close()
     return download_flag
 
 
-def puller(sleeptime=190):
+def puller(sleep=190):
     my_name = 'puller'
     while True:
         print my_name.rjust(10, '+'), 'start at {0}'.format(time.strftime('%Y-%m-%d %A %X %Z', time.localtime()))
         downloader()
-        print my_name.rjust(10, '+'), 'takes a snap for {0}s'.format(sleeptime)
-        time.sleep(sleeptime)
+        print my_name.rjust(10, '+'), 'takes a snap for {0}s'.format(sleep)
+        time.sleep(sleep)
 
 if __name__ == "__main__":
     puller()
