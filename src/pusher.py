@@ -40,9 +40,9 @@ def uploader():
           'description': 'Automatically uploaded by @liaozd, original URL: {0}'.format(youtubeURL),
         }
         youku = YoukuUpload.YoukuUpload(CLIENT_ID, ACCESS_TOKEN, filepath)
-        print my_name.rjust(10, "+"), 'uploading "{0}" to youku.com'.format(filepath)
+        print my_name.rjust(10, "+"), 'uploading "{0}" to YOUKU ..........'.format(filepath)
         print youku.upload(file_info)
-        print my_name.rjust(10, "+"), 'uploading finished'
+        print my_name.rjust(10, "+"), 'uploading {0} finished!!!!'.format(filepath)
         sql = 'UPDATE LINKS SET UPLOADED=1 WHERE YOUTUBE_URL="{0}";'.format(youtubeURL)
         c.execute(sql)
         db.commit()
