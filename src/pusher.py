@@ -27,12 +27,12 @@ def uploader():
     sql = 'SELECT TITLE, CATEGORIES, FILEPATH, YOUTUBE_URL FROM LINKS WHERE UPLOADED==0 AND DOWNLOADED==1 ORDER BY CREATED_AT ASC LIMIT 1;'
     c.execute(sql)
     sql_result = c.fetchone()
+    db.close()
 
     if sql_result:
         title, categories, filepath, youtubeURL = sql_result
         if ' & ' in categories:
             categories = categories.replace(' & ', ',')
-            print categories
         file_info = {
           'title': title,
           'tags': categories,
@@ -41,12 +41,20 @@ def uploader():
         }
         youku = YoukuUpload.YoukuUpload(CLIENT_ID, ACCESS_TOKEN, filepath)
         print my_name.rjust(10, "+"), 'uploading "{0}" to YOUKU ..........'.format(filepath)
-        print youku.upload(file_info)
-        print my_name.rjust(10, "+"), 'uploading {0} finished!!!!'.format(filepath)
+        try:
+            print youku.upload(file_info)
+            print my_name.rjust(10, "+"), 'uploading {0} finished!!!!'.format(filepath)
+        except:
+            print my_name.rjust(10, "+"), 'uploading fail, sleep for a while, and try again'
+            time.sleep(300)
+            return False
+
+        db = sqlite3.connect(DATABASE)
+        c = db.cursor()
         sql = 'UPDATE LINKS SET UPLOADED=1 WHERE YOUTUBE_URL="{0}";'.format(youtubeURL)
         c.execute(sql)
         db.commit()
-    db.close()
+        db.close()
 
 
 def pusher(sleeptime=190):
