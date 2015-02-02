@@ -188,10 +188,14 @@ def listener(count=10, sleeptime=280):
     """
     my_name = 'listener'
     while True:
-        mentions = weiboer.get_resent_mentions(count=count)
-        print my_name.rjust(12, '+'), "{0} - last weibo mention is {1}".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()), mentions['statuses'][0]['created_at'])
-        weiboer.dump_mentions_to_database(mentions=mentions)
-        # TODO @back to mentioner
+        try:
+            mentions = weiboer.get_resent_mentions(count=count)
+            print my_name.rjust(12, '+'), "{0} - last weibo mention is {1}".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()), mentions['statuses'][0]['created_at'])
+            weiboer.dump_mentions_to_database(mentions=mentions)
+            # TODO @back to mentioner
+        except Exception,e:
+            print str(e)
+            time.sleep(150)
         time.sleep(sleeptime)
 
 if __name__ == "__main__":
