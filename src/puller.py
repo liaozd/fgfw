@@ -6,8 +6,8 @@ from config import DATABASE
 from helper.slugify import slugify
 
 
-def my_utub_dl(youtube_url, destination="download/"):
-    my_name = 'my_utub_dl'
+def my_youtube_dl(youtube_url, destination="download/"):
+    my_name = 'my_youtube_dl'
     print my_name.rjust(12, '+'), 'is getting video info'
     # prepare filename and path to save the file
     ydl = youtube_dl.YoutubeDL()
@@ -49,7 +49,7 @@ def downloader():
     if youtube_url:
         youtube_url = youtube_url[0]
         # Start download and return the path name
-        r = my_utub_dl(youtube_url)
+        r = my_youtube_dl(youtube_url)
         # categories is a single element list, and it is a equivalence to youku tag
         if r['categories']:
             categories = r['categories'][0]

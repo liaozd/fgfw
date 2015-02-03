@@ -52,8 +52,10 @@ class WeiboListener(object):
                     DESCRIPTION CHAR(300),
                     FILEPATH CHAR(220),
                     YOUKU_URL CHAR(120),
-                    UPLOADED BOOLEAN NOT NULL DEFAULT 0
+                    UPLOADED BOOLEAN NOT NULL DEFAULT 0,
+                    RE_MENTION BOOLEAN NOT NULL DEFAULT 0
                     )''')
+                    # RE_MENTION is to @mentioner update status and youku url uploaded
         db.commit()
         db.close()
 
@@ -181,7 +183,7 @@ class WeiboListener(object):
 weiboer = WeiboListener()
 weiboer.apply_access_token()
 
-def listener(count=10, sleeptime=280):
+def listener(count=10, sleeptime=450):
     """listen to my weibo and push new mention to db
     """
     my_name = 'listener'
@@ -191,8 +193,8 @@ def listener(count=10, sleeptime=280):
             print my_name.rjust(12, '+'), "{0} - last weibo mention is {1}".format(time.strftime("%Y-%m-%d %A %X %Z", time.localtime()), mentions['statuses'][0]['created_at'])
             weiboer.dump_mentions_to_database(mentions=mentions)
             # TODO @back to mentioner
-        except Exception,e:
-            print str(e)
+        except Exception, e:
+            print my_name.rjust(12, '+'), 'ERROR: ', str(e)
             time.sleep(150)
         time.sleep(sleeptime)
 

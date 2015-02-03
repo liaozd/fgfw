@@ -43,12 +43,13 @@ def uploader():
         try:
             print youku.upload(file_info)
             print my_name.rjust(12, "+"), 'uploading {0} finished!!!!!!!'.format(title)
-        except:
+        except Exception, e:
             '''
             requests.exceptions.ConnectionError: HTTPConnectionPool(host='119.167.145.45', port=80):
             Max retries exceeded with url: /gupload/upload_slice?upload_token=MzAwODk3MjNfMDEwMDY0M0FBMjU0Q0U0Mzg1RkJCODAwNjVEQ0MzQjAwRjRDQ0ItN0JDRS1EOEI0LTZBMDktOTJGNzA3NEZDQjQyXzFfYTkxM2M2Y2Q0Mjk2MTUxZWZkMWJhNzY0MWQ0YmZhMzk%3D&length=2097152&slice_task_id=37&hash=2782107e52bec2bd0a75dbc971b00c9a&offset=75497472
             (Caused by <class 'httplib.BadStatusLine'>: '')
             '''
+            print my_name.rjust(12, '+'), 'ERROR: ', str(e)
             print my_name.rjust(12, "+"), 'uploading fail, sleep for a while, and try again.....'
             time.sleep(300)
             return False
