@@ -168,12 +168,9 @@ class WeiboListener(object):
                 continue
             try:
                 # TODO update ALL sql to Standard
-                sql = 'INSERT INTO LINKS (USERID, CREATED_AT, MID, YOUTUBE_URL) VALUES ({0},"{1}",{2},"{3}");'.format(
-                    user_id,
-                    created_at,
-                    mid,
-                    youtube_url)
-                cursor.execute(sql)
+                sql, values = 'INSERT INTO LINKS (USERID, CREATED_AT, MID, YOUTUBE_URL) VALUES (?,?,?,?)',\
+                              (user_id, created_at, mid, youtube_url)
+                cursor.execute(sql, values)
                 print "Update DB - INSERT: ", youtube_url
             except sqlite3.IntegrityError:
                 # print 'Youtube link already exists: {}'.format(youtube_url)
