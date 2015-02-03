@@ -55,8 +55,8 @@ def uploader():
 
         db = sqlite3.connect(DATABASE)
         c = db.cursor()
-        sql = 'UPDATE LINKS SET UPLOADED=1 WHERE YOUTUBE_URL="{0}";'.format(youtubeURL)
-        c.execute(sql)
+        sql, values = 'UPDATE LINKS SET UPLOADED=1 WHERE YOUTUBE_URL=?', (youtubeURL,)
+        c.execute(sql, values)
         db.commit()
         db.close()
         return True

@@ -123,6 +123,7 @@ class WeiboListener(object):
         # playlist: https://www.youtube.com/watch?v=mdcA5fR91S8&list=PLOU2XLYxmsII_38oWcnQzXs9K9HKBMg-e
         #           https://www.youtube.com/watch?v=IXvpvvb67hw&list=PLA64AFAE28B8DD0FD
         # long_url = "https://www.youtube.com/watch?v=IXvpvvb67hw&list=PLA64AFAE28B8DD0FD"
+        # TODO support m youtube link
         if short_url is None:
             return None
         long_url = self.expand_short_url(short_url)
@@ -151,7 +152,7 @@ class WeiboListener(object):
 
     def dump_mentions_to_database(self, mentions):
         db = sqlite3.connect(DATABASE)
-        cursor = db.cursor()
+        c = db.cursor()
         statuses = mentions['statuses']
         for oneMsg in statuses:
             # print oneMsg['user']['id'], oneMsg['mid'], oneMsg['created_at'], oneMsg['text']
@@ -170,7 +171,7 @@ class WeiboListener(object):
                 # TODO update ALL sql to Standard
                 sql, values = 'INSERT INTO LINKS (USERID, CREATED_AT, MID, YOUTUBE_URL) VALUES (?,?,?,?)',\
                               (user_id, created_at, mid, youtube_url)
-                cursor.execute(sql, values)
+                c.execute(sql, values)
                 print "Update DB - INSERT: ", youtube_url
             except sqlite3.IntegrityError:
                 # print 'Youtube link already exists: {}'.format(youtube_url)

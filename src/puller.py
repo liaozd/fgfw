@@ -16,7 +16,7 @@ def my_utub_dl(youtube_url, destination="download/"):
     file_path = os.path.join(destination, basename)
     # print "Start to download {}".format(file_path)
     ydl = youtube_dl.YoutubeDL({'outtmpl': file_path})
-    r = ydl.extract_info(youtube_url, download=True)
+    r = ydl.extract_info(youtube_url, download=False)
     r['file_path'] = file_path
     # for key in r:
     #     print key, ":", r[key]
@@ -55,13 +55,9 @@ def downloader():
             categories = r['categories'][0]
         # title = r['title'].replace('"', '\\"').replace("'", "\\'")
         # TODO escape / " and '
-        sql = 'UPDATE LINKS SET TITLE="{0}", FILEPATH="{1}", DOWNLOADED=1, CATEGORIES="{2}" WHERE YOUTUBE_URL="{3}";'.format(
-            r['title'],
-            r['file_path'],
-            categories,
-            youtube_url)
-        print sql
-        c.execute(sql)
+        sql, value = 'UPDATE LINKS SET TITLE=?, FILEPATH=?, DOWNLOADED=1, CATEGORIES=? WHERE YOUTUBE_URL=?',\
+                     (r['title'], r['file_path'], categories, youtube_url)
+        c.execute(sql, value)
         print my_name.rjust(12, '+'), 'download finished!'
         print my_name.rjust(12, '+'), 'UPDATE DATABASE WITH FILE PATH: ', r['file_path']
         download_flag = True
