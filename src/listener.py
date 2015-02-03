@@ -167,6 +167,7 @@ class WeiboListener(object):
             else:
                 continue
             try:
+                # TODO update ALL sql to Standard
                 sql = 'INSERT INTO LINKS (USERID, CREATED_AT, MID, YOUTUBE_URL) VALUES ({0},"{1}",{2},"{3}");'.format(
                     user_id,
                     created_at,
